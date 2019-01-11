@@ -42,6 +42,7 @@ C++FLAGS += -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums
 C++FLAGS += -Wall
 C++FLAGS += -DF_OSC=$(OSC)
 C++FLAGS += -mmcu=$(MCU)
+C++FLAGS += -I/home/eansalab/atmega/electronita/
 
 ASMFLAGS = $(INC)
 ASMFLAGS += -Os
@@ -101,6 +102,6 @@ config:
 #Flash
 flash :
 	@avrdude -C/usr/share/arduino/hardware/tools/avrdude.conf -v -v -v -v -patmega328p -carduino -P/dev/ttyUSB0 -b57600 -D -Uflash:w:main.hex
-
+	
 show-mcu:
 	$(G++) --help=target
