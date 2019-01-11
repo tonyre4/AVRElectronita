@@ -171,6 +171,7 @@ void writeDIAD();
 void writeRUSA();
 void writeGALV(unsigned char shift); 
 void writeEXPO();
+void menuINTER(int m);
 void menuTREN();
 void menuTENS();
 void menuDIAD();
@@ -194,7 +195,7 @@ void activateUpOutput();
 void activateDwOutput();
 void deactivateOutput();
 void activateTimer1(bool act);
-void configureTimer1(int COM, int Prescaler);
+void configureTimer1(int COM, char Prescaler);
 void setFrequency(int f, bool act);
 void countSeconds();
 void intervalCheck();
@@ -483,6 +484,10 @@ int bPressed(){
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void menuGALV(){
+  menuGALVDIAD(1);
+}
+
+void menuDIAD(){
   menuGALVDIAD(0);
 }
 
@@ -503,7 +508,6 @@ void menuGALVDIAD(int m){
         toprint=true;
       }
       if(Var1>1) Var1=1; 
-      //Str3=String('<'+ String(timeM)+ " min> " + String(timeS) + " seg");
       Str3[0] = '<';
       int sh = 1;
       sh += ValStr(timeM,1,Str3p);
@@ -525,7 +529,6 @@ void menuGALVDIAD(int m){
         toprint=true;
       }
       if(Var1>1) Var1=1; 
-     // Str3=String(String(timeM) + " min <" + String(timeS) + " seg>");
       int sh = 0;
       sh += ValStr(timeM,0,Str3p);
       StrW(Str3p, sh ," min <");
@@ -533,12 +536,11 @@ void menuGALVDIAD(int m){
       sh += ValStr(timeS,sh,Str3p);
       StrW(Str3p, sh ," seg>");
       break;}
-    case 3:
+    case 3:{
       if(Var1>1){
         Var1=1;
         testMode =! testMode;
         if(testMode){
-          //initGALV();
           if(m==1){
             initGALV();
           }
@@ -560,7 +562,7 @@ void menuGALVDIAD(int m){
       }
       if(Var2>1)Var2=1;
       if(Var2<1)Var2=1;
-      break;
+      break;}
     case 4:
        StrW(Str2p, 0, "Aplicar?");
        StrW(Str3p, 0, "OK = Iniciar");
@@ -579,8 +581,8 @@ void menuTENS(){
   if(Variables<1) Variables=1;
   if(Variables>5) Variables=5;
   switch(Variables){
-    case 1:
-     // Str2="Minutos";
+    case 1:{
+      StrW(Str2p,0,"Minutos");
       if(Var2>1){
         timeM++; checktime();
         Var2=1;
@@ -592,10 +594,16 @@ void menuTENS(){
         toprint=true;
       }
       if(Var1>1) Var1=1; 
-     // Str3=String('<'+ String(timeM)+ " min> " + String(timeS) + " seg");
-      break;
-    case 2:
-     // Str2="Segundos";
+      Str3[0] = '<';
+      int sh = 1;
+      sh += ValStr(timeM,1,Str3p);
+      StrW(Str3p, sh ," min> ");
+      sh += 6;
+      sh += ValStr(timeS,sh,Str3p);
+      StrW(Str3p, sh ," seg");
+      break;}
+    case 2:{
+      StrW(Str2p,0,"Segundos");
       if(Var2>1){
         timeS=timeS+30; checktime();
         Var2=1;
@@ -607,10 +615,15 @@ void menuTENS(){
         toprint=true;
       }
       if(Var1>1) Var1=1; 
-     // Str3=String(String(timeM) + " min <" + String(timeS) + " seg>");
-      break;
-    case 3:
-     // Str2="Frecuencia";
+      int sh = 0;
+      sh += ValStr(timeM,0,Str3p);
+      StrW(Str3p, sh ," min <");
+      sh += 6;
+      sh += ValStr(timeS,sh,Str3p);
+      StrW(Str3p, sh ," seg>");
+      break;}
+    case 3:{
+      StrW(Str2p,0,"Frecuencia");
       if(Var2>1){
         Hz++; checkfrecuencia();
         Var2=1;
@@ -622,8 +635,12 @@ void menuTENS(){
         toprint=true;
       }
       if(Var1>1) Var1=1; 
-     // Str3=String('<' + String(frecuencia[Hz]) + "Hz>");
-      break;
+      int sh = 1;
+      StrW(Str3p, 0 ,"<");
+      sh += ValStr(frecuencia[Hz],sh,Str3p);
+      StrW(Str3p, sh ," Hz>");
+      currentTENSf = frecuencia[Hz];
+      break;}
     case 4:
       if(Var1>1){
         Var1=1;
@@ -638,18 +655,18 @@ void menuTENS(){
         toprint=true;
       }
       if(testMode){
-       // Str2="Test Activado";
-       // Str3="OK = Desactivar";
+       StrW(Str2p, 0, "Test Activado");
+       StrW(Str3p, 0, "OK = Desactivar");
       }else {
-       // Str2="Test Desactivado";
-       // Str3="OK = Activar";
+       StrW(Str2p, 0, "Test Desactivado");
+       StrW(Str3p, 0, "OK = Activar");
       }
       if(Var2>1)Var2=1;
       if(Var2<1)Var2=1;
       break;
     case 5:
-     // Str2="Aplicar?";
-     // Str3="OK = Iniciar";
+       StrW(Str2p, 0, "Aplicar?");
+       StrW(Str3p, 0, "OK = Iniciar");
       if(Var1>1){
         Mensaje++;
         Var1=1;
@@ -662,11 +679,15 @@ void menuTENS(){
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void menuTREN(){
+  menuINTER(0);
+}
+
+void menuINTER(int m){
   if(Variables<1) Variables=1;
   if(Variables>5) Variables=5;
   switch(Variables){
-    case 1:
-     // Str2="Minutos";
+    case 1:{
+      StrW(Str2p,0,"Minutos");
       if(Var2>1){
         timeM++; checktime();
         Var2=1;
@@ -678,10 +699,16 @@ void menuTREN(){
         toprint=true;
       }
       if(Var1>1) Var1=1; 
-     // Str3=String('<'+ String(timeM)+ " min> " + String(timeS) + " seg");
-      break;
-    case 2:
-     // Str2="Segundos";
+      Str3[0] = '<';
+      int sh = 1;
+      sh += ValStr(timeM,1,Str3p);
+      StrW(Str3p, sh ," min> ");
+      sh += 6;
+      sh += ValStr(timeS,sh,Str3p);
+      StrW(Str3p, sh ," seg");
+      break;}
+    case 2:{
+      StrW(Str2p,0,"Segundos");
       if(Var2>1){
         timeS=timeS+30; checktime();
         Var2=1;
@@ -693,10 +720,15 @@ void menuTREN(){
         toprint=true;
       }
       if(Var1>1) Var1=1; 
-     // Str3=String(String(timeM) + " min <" + String(timeS) + " seg>");
-      break;
-    case 3:
-     // Str2="Intervalos";
+      int sh = 0;
+      sh += ValStr(timeM,0,Str3p);
+      StrW(Str3p, sh ," min <");
+      sh += 6;
+      sh += ValStr(timeS,sh,Str3p);
+      StrW(Str3p, sh ," seg>");
+      break;}
+    case 3:{
+      StrW(Str2p,0,"Segundos");
       if(Var2>1){
         intervalos++; checkintervalos();
         Var2=1;
@@ -708,14 +740,27 @@ void menuTREN(){
         toprint=true;
       }
       if(Var1>1) Var1=1; 
-     // Str3=String('<' + String(intervalos) + "seg>");
-      break;
+      int sh = 1;
+      StrW(Str3p, 0 ,"<");
+      sh += ValStr(intervalos,sh,Str3p);
+      StrW(Str3p, sh ," seg>");
+      break;}
     case 4:
       if(Var1>1){
         Var1=1;
         testMode =! testMode;
         if(testMode){
-          initTREN();
+          switch(m){
+            case 0:
+              initTREN();
+              break;
+            case 1:
+              initRUSA();
+              break;
+            case 2:
+              initEXPO();
+              break;
+          }
         }
         else{
           resetSets();
@@ -723,18 +768,18 @@ void menuTREN(){
         toprint=true;
       }
       if(testMode){
-       // Str2="Test Activado";
-       // Str3="OK = Desactivar";
+       StrW(Str2p, 0, "Test Activado");
+       StrW(Str3p, 0, "OK = Desactivar");
       }else {
-       // Str2="Test Desactivado";
-       // Str3="OK = Activar";
+       StrW(Str2p, 0, "Test Desactivado");
+       StrW(Str3p, 0, "OK = Activar");
       }
       if(Var2>1)Var2=1;
       if(Var2<1)Var2=1;
       break;
     case 5:
-     // Str2="Aplicar?";
-     // Str3="OK = Iniciar";
+       StrW(Str2p, 0, "Aplicar?");
+       StrW(Str3p, 0, "OK = Iniciar");
       if(Var1>1){
         Mensaje++;
         Var1=1;
@@ -747,244 +792,12 @@ void menuTREN(){
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void menuRUSA(){
-  if(Variables<1) Variables=1;
-  if(Variables>5) Variables=5;
-  switch(Variables){
-    case 1:
-     // Str2="Minutos";
-      if(Var2>1){
-        timeM++; checktime();
-        Var2=1;
-        toprint=true;
-      }
-      if(Var2<1){
-        timeM--; checktime();
-        Var2=1;
-        toprint=true;
-      }
-      if(Var1>1) Var1=1; 
-     // Str3=String('<'+ String(timeM)+ " min> " + String(timeS) + " seg");
-      break;
-    case 2:
-     // Str2="Segundos";
-      if(Var2>1){
-        timeS=timeS+30; checktime();
-        Var2=1;
-        toprint=true;
-      }
-      if(Var2<1){
-        timeS=timeS-30; checktime();
-        Var2=1;
-        toprint=true;
-      }
-      if(Var1>1) Var1=1; 
-     // Str3=String(String(timeM) + " min <" + String(timeS) + " seg>");
-      break;
-    case 3:
-     // Str2="Intervalos";
-      if(Var2>1){
-        intervalos++; checkintervalos();
-        Var2=1;
-        toprint=true;
-      }
-      if(Var2<1){
-        intervalos--; checkintervalos();
-        Var2=1;
-        toprint=true;
-      }
-      if(Var1>1) Var1=1; 
-     // Str3=String('<' + String(intervalos) + "seg>");
-      break;
-    case 4:
-      if(Var1>1){
-        Var1=1;
-        testMode =! testMode;
-        if(testMode){
-          initRUSA();
-        }
-        else{
-          resetSets();
-        }  
-        toprint=true;
-      }
-      if(testMode){
-       // Str2="Test Activado";
-       // Str3="OK = Desactivar";
-      }else {
-       // Str2="Test Desactivado";
-       // Str3="OK = Activar";
-      }
-      
-      if(Var2>1)Var2=1;
-      if(Var2<1)Var2=1;
-      break;
-    case 5:
-     // Str2="Aplicar?";
-     // Str3="OK = Iniciar";
-      if(Var1>1){
-        Mensaje++;
-        Var1=1;
-        toprint=true;
-      }
-      break;
-  }
+  menuINTER(1);
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void menuDIAD(){
-
-  menuGALVDIAD(0);
-
-//  if(Variables<1) Variables=1;
-//  if(Variables>4) Variables=4;
-//  switch(Variables){
-//    case 1:
-//     // Str2="Minutos";
-//      if(Var2>1){
-//        timeM++; checktime();
-//        Var2=1;
-//        toprint=true;
-//      }
-//      if(Var2<1){
-//        timeM--; checktime();
-//        Var2=1;
-//        toprint=true;
-//      }
-//      if(Var1>1) Var1=1; 
-//     // Str3=String('<'+ String(timeM)+ " min> " + String(timeS) + " seg");
-//      break;
-//    case 2:
-//     // Str2="Segundos";
-//      if(Var2>1){
-//        timeS=timeS+30; checktime();
-//        Var2=1;
-//        toprint=true;
-//      }
-//      if(Var2<1){
-//        timeS=timeS-30; checktime();
-//        Var2=1;
-//        toprint=true;
-//      }
-//      if(Var1>1) Var1=1; 
-//     // Str3=String(String(timeM) + " min <" + String(timeS) + " seg>");
-//      break;
-//    case 3:
-//      if(Var1>1){
-//        Var1=1;
-//        testMode =! testMode;
-//        if(testMode){
-//          initDIAD();
-//        }
-//        else{
-//          resetSets();
-//        }  
-//        toprint=true;
-//      }
-//      if(testMode){
-//       // Str2="Test Activado";
-//       // Str3="OK = Desactivar";
-//      }else {
-//       // Str2="Test Desactivado";
-//       // Str3="OK = Activar";
-//      }
-//      if(Var2>1)Var2=1;
-//      if(Var2<1)Var2=1;
-//      break;
-//    case 4:
-//     // Str2="Aplicar?";
-//     // Str3="OK = Iniciar";
-//      if(Var1>1){
-//        Mensaje++;
-//        Var1=1;
-//        toprint=true;
-//      }
-//      break;
-//  }
-}
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void menuEXPO(){
-  if(Variables<1) Variables=1;
-  if(Variables>5) Variables=5;
-  switch(Variables){
-    case 1:
-     // Str2="Minutos";
-      if(Var2>1){
-        timeM++; checktime();
-        Var2=1;
-        toprint=true;
-      }
-      if(Var2<1){
-        timeM--; checktime();
-        Var2=1;
-        toprint=true;
-      }
-      if(Var1>1) Var1=1; 
-     // Str3=String('<'+ String(timeM)+ " min> " + String(timeS) + " seg");
-      break;
-    case 2:
-     // Str2="Segundos";
-      if(Var2>1){
-        timeS=timeS+30; checktime();
-        Var2=1;
-        toprint=true;
-      }
-      if(Var2<1){
-        timeS=timeS-30; checktime();
-        Var2=1;
-        toprint=true;
-      }
-      if(Var1>1) Var1=1; 
-     // Str3=String(String(timeM) + " min <" + String(timeS) + " seg>");
-      break;
-    case 3:
-     // Str2="Intervalos";
-      if(Var2>1){
-        intervalos++; checkintervalos();
-        Var2=1;
-        toprint=true;
-      }
-      if(Var2<1){
-        intervalos--; checkintervalos();
-        Var2=1;
-        toprint=true;
-      }
-      if(Var1>1) Var1=1; 
-     // Str3=String('<' + String(intervalos) + "seg>");
-      break;
-    case 4:
-      if(Var1>1){
-        Var1=1;
-        testMode =! testMode;
-        if(testMode){
-          initEXPO();
-        }
-        else{
-          resetSets();
-        }  
-        toprint=true;
-      }
-      if(testMode){
-       // Str2="Test Activado";
-       // Str3="OK = Desactivar";
-      }else {
-       // Str2="Test Desactivado";
-       // Str3="OK = Activar";
-      }
-      
-      if(Var2>1)Var2=1;
-      if(Var2<1)Var2=1;
-      break;
-    case 5:
-     // Str2="Aplicar?";
-     // Str3="OK = Iniciar";
-      if(Var1>1){
-        Mensaje++;
-        Var1=1;
-        toprint=true;
-      }
-      if(Var2>1)Var2=1;
-      if(Var2<1)Var2=1;
-      break;
-  }
+  menuINTER(2);
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1045,6 +858,9 @@ void checkintervalos(){
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void Aplicando(){
+  Lcd4_Clear();
+  Lcd4_Set_Cursor(1, 0);
+  Lcd4_Write_String("Aplicando");
   intervalSecs = intervalos; //Setting interval time
   testMode = false;
   therapyTime = 0;
@@ -1075,9 +891,6 @@ void Aplicando(){
   int secdelayfinish=0;
   secondsPrinted=therapyTime;
   int secondsPrintedP=secondsPrinted;
-  Lcd4_Clear();
-  Lcd4_Set_Cursor(1, 0);
-  Lcd4_Write_String("Aplicando");
 
   activateTimer1(true);
 
@@ -1232,7 +1045,7 @@ int main(){
   Lcd4_Clear();
   Lcd4_Set_Cursor(1,1);
   Lcd4_Write_String("Inicio");
-  _delay_ms(2500);
+  _delay_ms(500);
   Lcd4_Clear();
 
 
@@ -1299,16 +1112,14 @@ void countSeconds(){ //This function manage some timing things
     periodCntr = 0;
     middleSec = false; //reseting middle time
     //expoCntr = 0;
-    if(intervalCount && !testMode){ //This is for managing interval counting. Should be disabled for GALV, DIAD and so on.
+    if(intervalCount){// && !testMode){ //This is for managing interval counting. Should be disabled for GALV, DIAD and so on.
       secondsCntr++; //This var is to manage intervals
     }
     therapyTime++; //How much seconds the program has been running
   }
   if(workingFreq/2 == periodCntr){
     middleSec = true; //to know the middle time
-    //expoCntr = 32;
   }
-//  digitalWrite(13,middleSec); //Timing 1s
 }
 
 void intervalCheck(){ //To enable and disable output for RUSA and EXPO
@@ -1355,28 +1166,28 @@ enum Name Freqs
 void setFrequency(int f, bool act){ //All real frequencies will be x100
   switch (f){
     case 1: //x100
-      configureTimer1(624,  0x04);
+      configureTimer1(624,  4);//0x04);
       break;
     case 5: //x500
-      configureTimer1(124,  0x04);
+      configureTimer1(124,  4);//0x04);
       break;
     case 10: //x1000
-      configureTimer1(249,  0x03);
+      configureTimer1(249,  3);//0x03);
       break;
     case 35: //x3500
-      configureTimer1(4570, 0x01);
+      configureTimer1(4570, 1);//0x01);
       break;
     case 50: //x5000
-      configureTimer1(49,   0x03);
+      configureTimer1(49,   3);//0x03);
       break;
     case 65: //x6500
-      configureTimer1(2460, 0x01);
+      configureTimer1(2460, 1);//0x01);
       break;   
     case 100: //x10000
-      configureTimer1(24,   0x03);
+      configureTimer1(24,   3);//0x03);
       break;
     case 200: //x20000
-      configureTimer1(99,   0x02);
+      configureTimer1(99,   2);//0x02);
       //configureTimer1(89,   0x02);  //timing fix
       break;          
   }
@@ -1663,10 +1474,12 @@ void initTimer1(){
 
 }
 
-void configureTimer1(int COM, int Prescaler){
+void configureTimer1(int COM, char Prescaler){
   initTimer1();
+  //Writing prescaler
+  TCCR1B  = Prescaler;
   //CTC mode: pag 172
-  TCCR1B |= (0 << WGM13) | (1 << WGM12);
+  TCCR1B |= 0x08;
   /*Prescaler: pag 173
    * 000 - Stopped
    * 001 - x1
@@ -1677,20 +1490,18 @@ void configureTimer1(int COM, int Prescaler){
    */
   //Interrupt Compare register
   OCR1A = COM;
-  //Writing prescaler
   //TCCR1B = 0x08; 
-  TCCR1B |= (Prescaler & 0x07);
   activateTimer1(true);
 }
-
-
 
 void activateTimer1(bool act){ //This function activates TIMER1_COMPA_vect
   if(act){
     TIMSK1 |=  (1 << OCIE1A); //Activate interrupt
+    sei(); // VERY IMPORTANT
   }
   else{
     TIMSK1 &= ~(1 << OCIE1A); //Deactivate interrupt
+    cli(); //VERY IMPORTANT
   }
 }
 ///////////////////////////////
@@ -1702,35 +1513,35 @@ void activateTimer1(bool act){ //This function activates TIMER1_COMPA_vect
 ////Configures 1KHz interruption for timing
 ////Real freq 961.5 Hz
 /////////////////////////////////
-void initTimer2(){
-  TCCR2A = 0x00;
-  TCCR2B = 0x00;
-  TIMSK2 = 0x00;
-  TCNT2  = 0x00; //Counter is cleared
-  OCR2A  = 0x14; //Compare Register for 1KHz
-}
+//void initTimer2(){
+//  TCCR2A = 0x00;
+//  TCCR2B = 0x00;
+//  TIMSK2 = 0x00;
+//  TCNT2  = 0x00; //Counter is cleared
+//  OCR2A  = 0x14; //Compare Register for 1KHz
+//}
 
-void configureTimer2(){ 
-  initTimer2();
-  //Enabling CTC mode pag 205
-  TCCR2A |= (1 << WGM21);
-  //CTC mode clear pag 203
-  TCCR2A |= (1 << COM2A1); 
-  //
-  /*Prescaler: pag 207
-   * 000 - Stopped
-   * 001 - x1
-   * 010 - x8
-   * 011 - x32
-   * 100 - x64
-   * 101 - x128
-   * 110 - x256
-   * 111 - x1024
-   */
-  TCCR2B |= (1 << CS22) | (0 << CS21) | (1 << CS20); //Prescaling
-  
-  TIMSK2 = (1 << OCIE2A); //Enables A interrupt
-}
+//void configureTimer2(){ 
+//  initTimer2();
+//  //Enabling CTC mode pag 205
+//  TCCR2A |= (1 << WGM21);
+//  //CTC mode clear pag 203
+//  TCCR2A |= (1 << COM2A1); 
+//  //
+//  /*Prescaler: pag 207
+//   * 000 - Stopped
+//   * 001 - x1
+//   * 010 - x8
+//   * 011 - x32
+//   * 100 - x64
+//   * 101 - x128
+//   * 110 - x256
+//   * 111 - x1024
+//   */
+//  TCCR2B |= (1 << CS22) | (0 << CS21) | (1 << CS20); //Prescaling
+//  
+//  TIMSK2 = (1 << OCIE2A); //Enables A interrupt
+//}
 
 void resetTimer(){
   mils = 0;
@@ -1743,26 +1554,8 @@ void startCount(){
   milsCnt = true;
 }
 
-void waitFor(int time){
-  for(int i=0;i<time;i++){
-      _delay_ms(1);
-  }
-  return;
-  while(true){
-    if (mils>=time)
-      break;
-    //lcd.setCursor(0, 0); //NO QUITAR
-  } 
-}
-
 void stopCount(){
   milsCnt = false;
-}
-
-ISR(TIMER2_COMPA_vect) {
-   //if(milsCnt){
-     mils++;
-   //}
 }
 
 /////////////////////////////////
