@@ -427,12 +427,8 @@ void loop2() {
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void VerifyOut(){
-
   PORTB = 0x04;
-  startCount();
   _delay_ms(1);
-  stopCount();
-  //for(int i=0; i<11; i++){ t = !t;}   /*NO BORRAR AYUDA AL CORRECTO FUNCIONAMIENTO DE LA MATRIZ*/
   if(PINB & 0x01){
     Var1++;/*OK*/
     return;
@@ -441,12 +437,8 @@ void VerifyOut(){
     Var3++;/*RIGHT*/
     return;
   }
-  
   PORTB = 0x08;
-  startCount();
   _delay_ms(1);
-  stopCount();
-  //for(int i=0; i<11; i++){ t = !t;}   /*NO BORRAR AYUDA AL CORRECTO FUNCIONAMIENTO DE LA MATRIZ*/
   if(PINB & 0x01){
     Var1--;/*RETURN*/
     return;
@@ -455,12 +447,8 @@ void VerifyOut(){
     Var2++;/*UP +(PLUS)*/
     return;
   }
-  
   PORTB = 0x10;
-  startCount();
   _delay_ms(1);
-  stopCount();
-  //for(int i=0; i<11; i++){ t = !t;}   /*NO BORRAR AYUDA AL CORRECTO FUNCIONAMIENTO DE LA MATRIZ*/
   if(PINB & 0x01){
     Var3--;/*LEFT*/
     return;
@@ -626,27 +614,27 @@ void menuTENS(){
       StrW(Str2p,0,"Frecuencia");
       if(Var2>1){
         Hz++; checkfrecuencia();
+        currentTENSf = frecuencia[Hz];
         Var2=1;
         toprint=true;
       }
       if(Var2<1){
         Hz--; checkfrecuencia();
+        currentTENSf = frecuencia[Hz];
         Var2=1;
         toprint=true;
       }
       if(Var1>1) Var1=1; 
       int sh = 1;
       StrW(Str3p, 0 ,"<");
-      sh += ValStr(frecuencia[Hz],sh,Str3p);
+      sh += ValStr(currentTENSf,sh,Str3p);
       StrW(Str3p, sh ," Hz>");
-      currentTENSf = frecuencia[Hz];
       break;}
     case 4:
       if(Var1>1){
         Var1=1;
         testMode =! testMode;
         if(testMode){
-          currentTENSf = frecuencia[Hz];
           initTENS();
         }
         else{
@@ -869,7 +857,7 @@ void Aplicando(){
       initGALV();
       break;
     case 2:
-      currentTENSf = frecuencia[Hz];
+      //currentTENSf = frecuencia[Hz];
       initTENS();
       break;
     case 3:
@@ -918,7 +906,7 @@ void Aplicando(){
         sh++;
         
         if(resttimeS<10){
-            StrW(Str3p, 0, "0");
+            StrW(Str3p, sh, "0");
             sh++;
         }
         sh += ValStr(resttimeS, sh, Str3p);
@@ -1112,7 +1100,7 @@ void countSeconds(){ //This function manage some timing things
     periodCntr = 0;
     middleSec = false; //reseting middle time
     //expoCntr = 0;
-    if(intervalCount){// && !testMode){ //This is for managing interval counting. Should be disabled for GALV, DIAD and so on.
+    if(intervalCount && !testMode){ //This is for managing interval counting. Should be disabled for GALV, DIAD and so on.
       secondsCntr++; //This var is to manage intervals
     }
     therapyTime++; //How much seconds the program has been running
@@ -1508,62 +1496,6 @@ void activateTimer1(bool act){ //This function activates TIMER1_COMPA_vect
 //Timer 1 configuration functions END
 ///////////////////////////////
 
-/////////////////////////////////
-//Timer 2 configuration functions
-////Configures 1KHz interruption for timing
-////Real freq 961.5 Hz
-/////////////////////////////////
-//void initTimer2(){
-//  TCCR2A = 0x00;
-//  TCCR2B = 0x00;
-//  TIMSK2 = 0x00;
-//  TCNT2  = 0x00; //Counter is cleared
-//  OCR2A  = 0x14; //Compare Register for 1KHz
-//}
-
-//void configureTimer2(){ 
-//  initTimer2();
-//  //Enabling CTC mode pag 205
-//  TCCR2A |= (1 << WGM21);
-//  //CTC mode clear pag 203
-//  TCCR2A |= (1 << COM2A1); 
-//  //
-//  /*Prescaler: pag 207
-//   * 000 - Stopped
-//   * 001 - x1
-//   * 010 - x8
-//   * 011 - x32
-//   * 100 - x64
-//   * 101 - x128
-//   * 110 - x256
-//   * 111 - x1024
-//   */
-//  TCCR2B |= (1 << CS22) | (0 << CS21) | (1 << CS20); //Prescaling
-//  
-//  TIMSK2 = (1 << OCIE2A); //Enables A interrupt
-//}
-
-void resetTimer(){
-  mils = 0;
-}
-void actTimer(bool in){
-  milsCnt = in;
-}
-void startCount(){
-  resetTimer();
-  milsCnt = true;
-}
-
-void stopCount(){
-  milsCnt = false;
-}
-
-/////////////////////////////////
-//Timer 2 configuration functions END
-/////////////////////////////////
-
-
-
 
 /////////////////
 //Debug functions
@@ -1574,8 +1506,6 @@ void testPWMs(){ //This function is only to check if signals are being generated
   OCR0A = 128;
   OCR0B = 128;
 }
-
-
 
 
 void actTimer0(){
