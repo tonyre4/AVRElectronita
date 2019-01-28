@@ -48,9 +48,9 @@ unsigned int long mils = 0;
 #define UP 1
 #define DOWN 2
 //Numbers to generate sine signal
-unsigned char sineSignal[50] = {0, 0, 31, 47, 63, 78, 93, 108, 122, 136, 149, 162, 174, 185, 196, 206, 215, 223, 230, 237, 242, 246, 250, 252, 254, 255, 254, 252, 250, 246, 242, 237, 230, 223, 215, 206, 196, 185, 174, 162, 149, 136, 122, 108, 93, 78, 63, 47, 0, 0};
+const unsigned char sineSignal[50] = {0, 0, 31, 47, 63, 78, 93, 108, 122, 136, 149, 162, 174, 185, 196, 206, 215, 223, 230, 237, 242, 246, 250, 252, 254, 255, 254, 252, 250, 246, 242, 237, 230, 223, 215, 206, 196, 185, 174, 162, 149, 136, 122, 108, 93, 78, 63, 47, 0, 0};
 //Numbers to divide sine signal
-unsigned char expoSignal[33] = {7, 7, 7, 7, 7, 6, 6, 6, 6, 6, 5, 5, 5, 5, 5, 4, 4, 4, 4, 4, 3, 3, 3, 3, 3, 2, 2, 2, 2, 2, 1, 1, 1};
+const unsigned char expoSignal[33] = {7, 7, 7, 7, 7, 6, 6, 6, 6, 6, 5, 5, 5, 5, 5, 4, 4, 4, 4, 4, 3, 3, 3, 3, 3, 2, 2, 2, 2, 2, 1, 1, 1};
 //number to calculate exponential
 char expoCntr = 0;
 //Sample counter
@@ -229,7 +229,7 @@ unsigned char secondsPrintedP, secondsPrinted=0;
 int timeM=10;   //Setea los minutos y fluctua entre 0 y 99 no pudiendo ser este menor a 0:30
 int timeS=0;    //Setea los segundos y fluctua entre 0 y 30
 int intervalos=5;   //Sete el tiempo que habra de intervalos
-int frecuencia[6]={1, 5, 10, 50, 100, 200};   //Frecuencias disponibles para TENS
+const int frecuencia[6]={1, 5, 10, 50, 100, 200};   //Frecuencias disponibles para TENS
 int Hz=0;   //Iterador de las frecuencias de TENS
 
 char Str2[16]; 
@@ -259,6 +259,53 @@ int bPressed();
 void LCDsetup();
 void StrW(char *in, int shift , char *wr);
 int ValStr(int v, int shift, char *wr);
+void initVars();
+
+void initVars(){
+//////////
+//HMI vars
+//////////
+Var1=1;   //Variable controlada por los botones OK y RETURN/BACK
+Var2=1;   //Variable controlada por los botones UP/+ y DOWN/-
+Var3=1;   //Variable controlada por los botones LEFT y RIGHT
+Modos=1;    //Indica que modo se debe imprimir en la pantalla y a que menu (función) de dicho modo se debe entrar
+Variables=1;    //Fluctua entre las variables a modificar
+Mensaje=1;    //Controla el switch principal, maneja lo que debe imprimirse
+Testindicator=false;
+t=false;   //Ayuda a reducir el rebote de la lectura de matriz
+
+toprint=true;    //Cuando ocurra un cambio que afecte a los valores impresos, da la orden de imprimir al estar en TRUE
+secondsPrintedP, secondsPrinted=0;
+
+timeM=10;   //Setea los minutos y fluctua entre 0 y 99 no pudiendo ser este menor a 0:30
+timeS=0;    //Setea los segundos y fluctua entre 0 y 30
+intervalos=5;   //Sete el tiempo que habra de intervalos
+Hz=0;   //Iterador de las frecuencias de TENS
+
+////////
+//Signals vars
+////////
+signalType = GALV; //Galv as default
+periodCntr = 0;
+sampleCntr = 0;
+regSample = 0;
+secondsCntr = 0;
+workingFreq = 200; //Galv freq as default
+intervalSecs = 5;
+therapyTime = 0;
+signalDirection = OFF;
+currentTENSf = 1; //Default is 1
+milsCnt = false;
+expoCntr = 0;
+sideEdge = false;
+intervalCount = false;
+signalState = false; //Signal by default is deactivated
+therapyState = false; //Obviously this should be false by default
+periodCnt = false;
+testMode = false; //default is false
+middleSec = false; //default is false
+expWrite = 0;
+}
 
 void setup2() {
   LCDsetup();
@@ -274,7 +321,6 @@ void LCDsetup(){
 }
 
 void loop2() { 
-    
 
   if(bPressed()){
     VerifyOut();
@@ -354,12 +400,13 @@ void loop2() {
   switch(Mensaje){
     case 1:   //Mensaje de bienvenida
       if(toprint){
-        Lcd4_Clear();//lcd.clear();
+        Lcd4_Clear();
         Lcd4_Set_Cursor(1, 1);
         Lcd4_Write_String("Presione OK");
         Lcd4_Set_Cursor(2, 2);
         Lcd4_Write_String("para iniciar");
         toprint=false;
+        //initVars();
       }
       break;/////////////////////////////////////////////////////////////////////////////////////////////////
     case 2:   //Mensaje de modos
@@ -1003,6 +1050,11 @@ void testGALV(){ //It will give little pulses
   DDRD |= 0x60; 
 }
 
+void testEXPO();
+void testEXPO(){ //It will give little pulses
+  initEXPO();
+  DDRD |= 0x60; 
+}
 #endif
 
 int main(){
@@ -1019,7 +1071,7 @@ int main(){
   _delay_ms(1000);
 
   //Here code to debug//
-  //testGALV();
+  testEXPO();
 
   while(1){ 
   Lcd4_Write_String("Senales");
@@ -1148,7 +1200,7 @@ enum Name Freqs
 1 Tren = 35Hz
 2 RUSA = 50Hz
 3 EXPO = 65Hz
-4 GALV - 200Hz
+4 GALV = 0Hz << DC
 5 DIAD = 200Hz
 */
 void setFrequency(int f, bool act){ //All real frequencies will be x100
@@ -1295,6 +1347,9 @@ void configTENS(){ //Init config for TENS
   DDRD |= 0x60; //Activate output
 }
 void writeTENS(){
+  //ValStr(sampleCntr, 0, Str2p);
+  //Lcd4_Set_Cursor(1, 1);
+  //Lcd4_Write_String(Str2p);
   if(sampleCntr == 0){
     sideEdge = !sideEdge;
   }
@@ -1306,6 +1361,8 @@ void writeTENS(){
       else{
         activateDwOutput();
       }
+      //Aunque son los dos bits uno se declara como entrada para
+      //no sacar nada
       PORTD |= 0x60;
     break;
     case 4:
@@ -1331,7 +1388,11 @@ void configGALV(){ // Init config for GALV
   deactivateOutput();
   sideEdge = true;
 }
-void writeGALV(unsigned char shift){ 
+void writeGALV(unsigned char shift){
+  if (signalType == GALV){
+    PORTD |= 0x20;
+  }
+  else{
   regSample = sineSignal[sampleCntr];  //taking the register from sineSignal
   if (regSample == 0){  //if the reg is 0 then deactivate output
     if(signalDirection != OFF){
@@ -1353,6 +1414,7 @@ void writeGALV(unsigned char shift){
         activateDwOutput();
       }
     } 
+  }
   }
 }
 //&&&&&&&&&&&&&

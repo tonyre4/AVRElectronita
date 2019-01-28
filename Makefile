@@ -102,6 +102,9 @@ config:
 #Flash
 flash :
 	@avrdude -C/usr/share/arduino/hardware/tools/avrdude.conf -v -v -v -v -patmega328p -carduino -P/dev/ttyUSB0 -b57600 -D -Uflash:w:main.hex
+funo :
+	@avrdude -C/usr/share/arduino/hardware/tools/avrdude.conf -v -v -v -v -patmega328p -carduino -P/dev/ttyACM3 -b115200 -D -Uflash:w:main.hex
+
 	
 show-mcu:
 	$(G++) --help=target
