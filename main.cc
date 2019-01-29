@@ -1138,7 +1138,7 @@ ISR(TIMER1_COMPA_vect) {
   }
   else{ //If the signal should be disable this part will kill the signal
     intervalCheck();
-    if(signalDirection != OFF) //If the direction is not pointing to disabled
+    //if(signalDirection != OFF) //If the direction is not pointing to disabled
       deactivateOutput(); //This will kill the output
   }
   countSeconds(); //timing stuff
@@ -1390,7 +1390,9 @@ void configGALV(){ // Init config for GALV
 }
 void writeGALV(unsigned char shift){
   if (signalType == GALV){
-    PORTD |= 0x20;
+    deactivatePWM();
+    //activateDwOutput();
+    PORTD |= 0x40;
   }
   else{
   regSample = sineSignal[sampleCntr];  //taking the register from sineSignal
