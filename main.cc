@@ -210,12 +210,6 @@ void actTimer0();
 
 //Func dec
 void setup2() ;
-void menuGALV();
-void menuTENS();
-void menuTREN();
-void menuRUSA();
-void menuDIAD();
-void menuEXPO();
 void waitFor(int time);
 void startCount();
 void stopCount();
@@ -339,19 +333,9 @@ void PMes(int n){
   Lcd4_Write_String(Str2p);
 }
 
-#ifdef DEBUGSIGNALS
-void testGALV();
-void testGALV(){ //It will give little pulses
-  initGALV();
-  DDRD |= 0x60; 
-}
 
-void testEXPO();
-void testEXPO(){ //It will give little pulses
-  initEXPO();
-  DDRD |= 0x60; 
-}
-#endif
+#define DEBUGSIGNALS
+#include "testers.h"
 
 
 int main(){
@@ -363,15 +347,22 @@ int main(){
   
   #ifdef DEBUGSIGNALS
   Lcd4_Clear();
-  Lcd4_Set_Cursor(1,0);
-  Lcd4_Write_String("Senales");
   _delay_ms(1000);
 
   //Here code to debug//
-  testEXPO();
+  //testTENS();
+  Lcd4_Clear();
+  Lcd4_Set_Cursor(1,0);
+  Lcd4_Write_String("Turning relay on"); 
+  _delay_ms(2000);
+  Lcd4_Clear();
+  Lcd4_Set_Cursor(1,0);
+  DDRD |= 0x80;
+  Rly1State(true);
+  testTENS();
+  Lcd4_Write_String("It should be on"); 
 
   while(1){ 
-  Lcd4_Write_String("Senales");
   }
   #else
   
