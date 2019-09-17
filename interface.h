@@ -123,7 +123,7 @@ int ValStr(int v, int shift, char *wr){
 }
 
 void StrW(char *wr, int shift , char *in){
-  int i;
+  int i=0;
   //for(i=0;in[i]!='\0';i++){
   //  wr[i+shift] = in[i];
   //}
@@ -663,7 +663,7 @@ void Aplicando(){
   int resttimeM=timeM;   //Variables volatiles que toman el valor del tiempo con X mins y Y segs
   int resttimeS=timeS;
   int secondsPrinted;
-  int secdelayfinish=0;
+  //int secdelayfinish=0;
   secondsPrinted=therapyTime;
   int secondsPrintedP=secondsPrinted;
 
@@ -711,7 +711,7 @@ void Aplicando(){
   Lcd4_Write_String("Finalizado");
   resetSets();
   int j=1;
-  int until;
+  int until=0;
   for(int i=0; i<2000; i++){
     _delay_ms(1);
     if(i == (4*j)){

@@ -38,7 +38,7 @@ CFLAGS += -mmcu=$(MCU)
 
 C++FLAGS = $(INC)
 C++FLAGS += -Os
-C++FLAGS += -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums
+C++FLAGS += -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums -Wno-write-strings
 C++FLAGS += -Wall
 C++FLAGS += -DF_OSC=$(OSC)
 C++FLAGS += -mmcu=$(MCU)

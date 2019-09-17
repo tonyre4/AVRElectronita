@@ -52,7 +52,7 @@ const unsigned char sineSignal[50] = {0, 0, 31, 47, 63, 78, 93, 108, 122, 136, 1
 //Numbers to divide sine signal
 const unsigned char expoSignal[33] = {7, 7, 7, 7, 7, 6, 6, 6, 6, 6, 5, 5, 5, 5, 5, 4, 4, 4, 4, 4, 3, 3, 3, 3, 3, 2, 2, 2, 2, 2, 1, 1, 1};
 //number to calculate exponential
-char expoCntr = 0;
+unsigned int expoCntr = 0;
 //Sample counter
 unsigned char sampleCntr = 0;
 //Register used to write samples 
@@ -230,7 +230,8 @@ Testindicator=false;
 t=false;   //Ayuda a reducir el rebote de la lectura de matriz
 
 toprint=true;    //Cuando ocurra un cambio que afecte a los valores impresos, da la orden de imprimir al estar en TRUE
-secondsPrintedP, secondsPrinted=0;
+secondsPrintedP=0; 
+secondsPrinted=0;
 
 timeM=10;   //Setea los minutos y fluctua entre 0 y 99 no pudiendo ser este menor a 0:30
 timeS=0;    //Setea los segundos y fluctua entre 0 y 30
