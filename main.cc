@@ -54,7 +54,7 @@ const unsigned char expoSignal[33] = {7, 7, 7, 7, 7, 6, 6, 6, 6, 6, 5, 5, 5, 5, 
 //number to calculate exponential
 unsigned int expoCntr = 0;
 //Sample counter
-unsigned char sampleCntr = 0;
+unsigned int sampleCntr = 0;
 //Register used to write samples 
 unsigned char regSample = 0;
 //Bool to know the side of the output signal / true - Positive edge / false - Negative edge
@@ -335,7 +335,7 @@ void PMes(int n){
 }
 
 
-#define DEBUGSIGNALS
+//#define DEBUGSIGNALS
 #include "testers.h"
 
 
@@ -351,17 +351,17 @@ int main(){
   _delay_ms(1000);
 
   //Here code to debug//
-  //testTENS();
+  
   Lcd4_Clear();
   Lcd4_Set_Cursor(1,0);
-  Lcd4_Write_String("Turning relay on"); 
+  Lcd4_Write_String("Testing TENS"); 
   _delay_ms(2000);
-  Lcd4_Clear();
-  Lcd4_Set_Cursor(1,0);
+  Lcd4_Set_Cursor(2,0);
+  Lcd4_Write_String("Its ON"); 
+  
   DDRD |= 0x80;
   Rly1State(true);
   testTENS();
-  Lcd4_Write_String("It should be on"); 
 
   while(1){ 
   }
@@ -625,7 +625,7 @@ void writeRUSA(){
 void initTENS(){
   configTENS();
   signalType = TENS;
-  actTimer0();
+  //actTimer0();
   signalState = true; //For activate outputs
   setFrequency(currentTENSf,true); //Activating timers
   Rly1State(true);
@@ -646,15 +646,15 @@ void writeTENS(){
     case 0:
       if(sideEdge){
         activateUpOutput();
+        PORTD |= 0x40;
       }
       else{
         activateDwOutput();
+        PORTD |= 0x20;
       }
-      //Aunque son los dos bits uno se declara como entrada para
-      //no sacar nada
-      PORTD |= 0x60;
     break;
     case 4:
+      PORTD &= ~(0x60);
       deactivateOutput();
     break;
   }

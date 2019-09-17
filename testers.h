@@ -1,8 +1,8 @@
 #ifdef DEBUGSIGNALS
 void testTENS();
 void testTENS(){
+  currentTENSf=100;
   initTENS();
-  DDRD |= 0x60;
 }
 
 void testGALV();
